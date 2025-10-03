@@ -1,14 +1,11 @@
 import streamlit as st
-import openai
-
-# Load OpenAI API key from Streamlit secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+from openai import OpenAI
 
 # 🌿 Page setup
-st.set_page_config(page_title="ManaShuddhii", layout="centered")
+st.set_page_config(page_title="ManaShuddhi", layout="centered")
 
-st.title("🌤️ ManaShuddhii")
-st.subheader("a soulful space to return to your higher self")
+st.title("🌤️ ManaShuddhi")
+st.subheader("A soulful space to return to your higher self")
 
 st.markdown("""
 Welcome, radiant soul. 🌸  
@@ -22,7 +19,7 @@ with st.form("soulful_reflection_form"):
     mood = st.text_input("💖 How are you feeling in this moment?")
     intention = st.text_input("🎯 What would you like to invite into your life today?")
     noise = st.text_area("🌪️ What's clouding your mind or pulling your energy?")
-    submitted = st.form_submit_button("✨ Reflect with ManaShuddhii")
+    submitted = st.form_submit_button("✨ Reflect with ManaShuddhi")
 
 # ✨ Generate soulful reflection
 if submitted:
@@ -30,6 +27,7 @@ if submitted:
         st.warning("Please fill in all the fields to receive your reflection.")
     else:
         with st.spinner("🌬️ Channeling peace and clarity..."):
+            # Prepare prompt
             prompt = f"""
 You are a gentle, poetic mindfulness coach and soul guide.
 
@@ -49,24 +47,25 @@ Include and beautifully weave in these healing elements:
 - Awakening to pure consciousness
 - Soothe the vagus nerve (rest-digest state, calming tone)
 - Mindfulness, gratitude, inner smile, and silence
-
-Use poetic, soft, uplifting language. Speak like a spiritual guide or gentle energy healer. Use line breaks for rhythm. Create a sense of beauty, peace, and soul restoration.
 """
 
-            response = openai.ChatCompletion.create(
-                model="gpt-4-0613",
+            # New OpenAI API client
+            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": "You are a gentle soul coach and poetic mindfulness guide."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.8,
             )
-            output = response["choices"][0]["message"]["content"]
 
-            st.success("🌈 Your Reflection from ManaShuddhii:")
+            # Get the generated text
+            output = response.choices[0].message.content
+            st.success("🌈 Your Reflection from ManaShuddhi:")
             st.markdown(output)
 
+# Optional soothing background
 st.markdown("---")
-
 st.markdown("🎵 **Optional: Soothing Background Sound**")
 st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", format="audio/mp3")
